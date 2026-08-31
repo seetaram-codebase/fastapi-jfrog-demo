@@ -4,9 +4,9 @@
 // infra/jenkins-ecs/agent-ec2.tf there.
 //
 // Branch decides the destination repo: feature/* (and anything else not
-// explicitly listed below) builds into docker-sandbox-local and stops
-// there — validation only, no deploy. develop/master build straight into
-// docker-release-local and auto-deploy to production once the Xray gate
+// explicitly listed below) builds into artifact-sandbox and stops there
+// — validation only, no deploy. develop/master build straight into
+// artifact-release and auto-deploy to production once the Xray gate
 // passes — no manual approval step.
 //
 // Requires a Multibranch Pipeline job (not a plain Pipeline job), so
@@ -26,8 +26,8 @@ pipeline {
     JF_URL          = 'https://trialkj7tft.jfrog.io'
     DOCKER_REGISTRY = 'trialkj7tft.jfrog.io'
     APP_NAME        = 'shipit'
-    SANDBOX_REPO    = 'docker-sandbox-local'
-    RELEASE_REPO    = 'docker-release-local'
+    SANDBOX_REPO    = 'artifact-sandbox'
+    RELEASE_REPO    = 'artifact-release'
     BUILD_NAME      = 'shipit'
     ECS_CLUSTER     = 'jfrog-demo-app'
 
