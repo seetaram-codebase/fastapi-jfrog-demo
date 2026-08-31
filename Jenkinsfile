@@ -34,6 +34,13 @@ pipeline {
     GIT_SHA   = "${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'local'}"
     IMAGE_TAG = "${GIT_SHA}-${env.BUILD_NUMBER}"
     BRANCH    = "${env.BRANCH_NAME ?: 'unknown'}"
+
+    // jf's config is normally a single file shared by every build on this
+    // node (~/.jfrog). Concurrent builds (e.g. master and a feature
+    // branch overlapping) would otherwise race on the same "jfrog-server"
+    // entry — one build's post-cleanup can delete it while another is
+    // mid-flight. Isolating it per-build-per-workspace avoids that.
+    JFROG_CLI_HOME_DIR = "${env.WORKSPACE}/.jfrog-cli-home"
   }
 
   stages {
