@@ -70,7 +70,7 @@ pipeline {
           ).trim()
         }
         sh """
-          docker build \
+          DOCKER_BUILDKIT=1 docker build \
             --build-arg PYTHON_VERSION=${BASE_IMAGE} \
             --build-arg GIT_COMMIT=${GIT_SHA} \
             --build-arg BUILD_NUMBER=${BUILD_NUMBER} \
