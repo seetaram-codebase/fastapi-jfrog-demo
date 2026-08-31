@@ -28,7 +28,6 @@ pipeline {
     APP_NAME        = 'shipit'
     SANDBOX_REPO    = 'artifact-sandbox'
     RELEASE_REPO    = 'artifact-release'
-    BUILD_NAME      = 'shipit'
     ECS_CLUSTER     = 'jfrog-demo-app'
 
     GIT_SHA   = "${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'local'}"
@@ -63,7 +62,12 @@ pipeline {
         script {
           env.IS_RELEASE  = (env.BRANCH in ['develop', 'master']).toString()
           env.TARGET_REPO = (env.IS_RELEASE == 'true') ? env.RELEASE_REPO : env.SANDBOX_REPO
-          echo "Branch '${env.BRANCH}' -> ${env.TARGET_REPO} (release=${env.IS_RELEASE})"
+          // Separate build names so each route gets its own Xray watch —
+          // a single "shipit" build name can't carry two different
+          // severity thresholds (Critical/High on sandbox vs also-Medium
+          // on release).
+          env.BUILD_NAME  = (env.IS_RELEASE == 'true') ? "${env.APP_NAME}-release" : "${env.APP_NAME}-sandbox"
+          echo "Branch '${env.BRANCH}' -> ${env.TARGET_REPO}, build '${env.BUILD_NAME}' (release=${env.IS_RELEASE})"
         }
       }
     }
