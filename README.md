@@ -2,7 +2,7 @@
 
 A small FastAPI app (`app/`) and the `Jenkinsfile` that builds it, scans
 it with JFrog Xray, and — depending on branch — pushes it to
-`docker-sandbox-local` or `docker-release-local` on JFrog Artifactory.
+`artifact-sandbox` or `artifact-release` on JFrog Artifactory.
 
 Jenkins and its AWS infra (the EC2 instance, security groups, etc.) live
 in a separate repo: [cicd-pipeline-jfrog](https://github.com/seetaram-codebase/cicd-pipeline-jfrog).
@@ -12,8 +12,8 @@ This repo is just the application + pipeline definition Jenkins builds.
 
 | Branch | Pushes to | Deploys to prod? |
 |---|---|---|
-| `feature/*` (or anything else) | `docker-sandbox-local` | No — stops after the Xray gate |
-| `develop`, `master` | `docker-release-local` (built directly, no promotion) | Yes — automatically, if the gate passes |
+| `feature/*` (or anything else) | `artifact-sandbox` | No — stops after the Xray gate |
+| `develop`, `master` | `artifact-release` (built directly, no promotion) | Yes — automatically, if the gate passes |
 
 See `cicd-pipeline-jfrog`'s `SPEC.md` for the full gate/policy details.
 
