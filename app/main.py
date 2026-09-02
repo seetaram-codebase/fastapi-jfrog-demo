@@ -31,3 +31,8 @@ def version():
 @app.get("/ping")
 def ping():
     return {"pong": True}
+
+
+@app.get("/pong")
+def pong():
+    return {"ping": True}
