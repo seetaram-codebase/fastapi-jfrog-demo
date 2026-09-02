@@ -67,7 +67,14 @@ pipeline {
           // severity thresholds (Critical/High on sandbox vs also-Medium
           // on release).
           env.BUILD_NAME  = (env.IS_RELEASE == 'true') ? "${env.APP_NAME}-release" : "${env.APP_NAME}-sandbox"
-          echo "Branch '${env.BRANCH}' -> ${env.TARGET_REPO}, build '${env.BUILD_NAME}' (release=${env.IS_RELEASE})"
+          // jf build-scan evaluates Xray's "build" resource type, which
+          // — on this account — never actually computes violations
+          // (stuck at "Not Scanned" no matter how many times it's
+          // triggered), unlike the "repository" resource type, which
+          // does. Gate on the pushed image directly instead, scoped to
+          // the matching watch.
+          env.WATCH_NAME  = (env.IS_RELEASE == 'true') ? 'release-xray-gate' : 'sandox-xray-gate'
+          echo "Branch '${env.BRANCH}' -> ${env.TARGET_REPO}, build '${env.BUILD_NAME}', watch '${env.WATCH_NAME}' (release=${env.IS_RELEASE})"
         }
       }
     }
@@ -104,7 +111,7 @@ pipeline {
 
     stage('Xray scan — gate') {
       steps {
-        sh "jf build-scan ${BUILD_NAME} ${BUILD_NUMBER} --fail=true"
+        sh "jf docker scan ${DOCKER_REGISTRY}/${TARGET_REPO}/${APP_NAME}:${IMAGE_TAG} --watches=${WATCH_NAME} --fail=true"
       }
     }
 
