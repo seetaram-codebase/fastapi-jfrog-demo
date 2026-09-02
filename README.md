@@ -1,8 +1,10 @@
 # fastapi-jfrog-demo
 
-A small FastAPI app (`app/`) and the `Jenkinsfile` that builds it, scans
-it with JFrog Xray, and — depending on branch — pushes it to
-`artifact-sandbox` or `artifact-release` on JFrog Artifactory.
+A small FastAPI app — source in `app/`, `Dockerfile`/`requirements.txt`/
+`base-image.env` at repo root (the Docker build context) — and the
+`Jenkinsfile` that builds it, scans it with JFrog Xray, and — depending
+on branch — pushes it to `artifact-sandbox` or `artifact-release` on
+JFrog Artifactory.
 
 Jenkins and its AWS infra (the EC2 instance, security groups, etc.) live
 in a separate repo: [cicd-pipeline-jfrog](https://github.com/seetaram-codebase/cicd-pipeline-jfrog).
@@ -20,7 +22,6 @@ See `cicd-pipeline-jfrog`'s `SPEC.md` for the full gate/policy details.
 ## Local dry run (no Jenkins)
 
 ```
-cd app
 docker build --build-arg PYTHON_VERSION=3.11-slim-bookworm -t shipit:local .
 docker run -p 8000:8000 shipit:local
 curl localhost:8000/version
@@ -29,7 +30,7 @@ curl localhost:8000/ping
 
 ## Demo the Xray gate
 
-`app/base-image.env` starts pinned to `3.9-slim-buster` (EOL, trips the
+`base-image.env` starts pinned to `3.9-slim-buster` (EOL, trips the
 Xray Critical/High gate on purpose). Run `scripts/break-the-build.sh` to
 toggle it to a patched base image (`3.11-slim-bookworm`), commit, push —
 that's the live "blocked → fixed" demo beat.

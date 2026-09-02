@@ -76,7 +76,7 @@ pipeline {
       steps {
         script {
           env.BASE_IMAGE = sh(
-            script: "grep -oP '(?<=PYTHON_VERSION=).*' app/base-image.env",
+            script: "grep -oP '(?<=PYTHON_VERSION=).*' base-image.env",
             returnStdout: true
           ).trim()
         }
@@ -88,7 +88,7 @@ pipeline {
             --build-arg BUILD_NUMBER=${BUILD_NUMBER} \
             --build-arg IMAGE_TAG=${IMAGE_TAG} \
             -t ${DOCKER_REGISTRY}/${TARGET_REPO}/${APP_NAME}:${IMAGE_TAG} \
-            app/
+            .
         """
       }
     }

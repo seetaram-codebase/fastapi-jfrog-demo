@@ -1,10 +1,13 @@
 # syntax=docker/dockerfile:1.7
 #
-# PYTHON_VERSION is intentionally NOT hardcoded here beyond a fallback default.
-# The Jenkinsfile reads app/base-image.env and passes it as --build-arg, so
-# toggling that file (via scripts/break-the-build.sh) changes what gets built
-# without editing this file. The default below matches the vulnerable demo
-# starting state for plain `docker build .` runs outside Jenkins.
+# Build context is the repo root (not app/) so this Dockerfile and
+# requirements.txt can live at top level, with only actual application
+# code under app/. PYTHON_VERSION is intentionally NOT hardcoded here
+# beyond a fallback default. The Jenkinsfile reads base-image.env and
+# passes it as --build-arg, so toggling that file (via
+# scripts/break-the-build.sh) changes what gets built without editing
+# this file. The default below matches the vulnerable demo starting
+# state for plain `docker build .` runs outside Jenkins.
 ARG PYTHON_VERSION=3.9-slim-buster
 
 FROM python:${PYTHON_VERSION} AS builder
@@ -16,7 +19,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 FROM python:${PYTHON_VERSION}
 WORKDIR /app
 COPY --from=builder /install /usr/local
-COPY . .
+COPY app/ .
 
 ARG GIT_COMMIT=unknown
 ARG BUILD_NUMBER=local

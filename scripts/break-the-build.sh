@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Toggles app/base-image.env between a deliberately outdated Python base
+# Toggles base-image.env between a deliberately outdated Python base
 # image (Debian Buster, EOL — trips the Xray Critical/High gate) and a
 # current patched one. Run it, commit, push — that's the live "blocked
 # gate" demo moment.
 set -euo pipefail
 
-ENV_FILE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/app/base-image.env"
+ENV_FILE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/base-image.env"
 VULNERABLE="3.9-slim-buster"
 PATCHED="3.11-slim-bookworm"
 
