@@ -22,7 +22,7 @@ See `cicd-pipeline-jfrog`'s `SPEC.md` for the full gate/policy details.
 ## Local dry run (no Jenkins)
 
 ```
-docker build --build-arg PYTHON_VERSION=3.11-slim-bookworm -t shipit:local .
+docker build --build-arg PYTHON_VERSION=3.11-alpine -t shipit:local .
 docker run -p 8000:8000 shipit:local
 curl localhost:8000/version
 curl localhost:8000/ping
@@ -32,8 +32,12 @@ curl localhost:8000/ping
 
 `base-image.env` starts pinned to `3.9-slim-buster` (EOL, trips the
 Xray Critical/High gate on purpose). Run `scripts/break-the-build.sh` to
-toggle it to a patched base image (`3.11-slim-bookworm`), commit, push —
-that's the live "blocked → fixed" demo beat.
+toggle it to `3.11-alpine`, commit, push — that's the live "blocked →
+fixed" demo beat. Alpine, not a current Debian tag, on purpose: even an
+actively-patched Debian image realistically still carries some
+outstanding Critical/High CVEs in its large OS package set, so a Debian
+tag can't reliably demo a clean pass — Alpine's much smaller surface
+can.
 
 ## Jenkins setup
 
