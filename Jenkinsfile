@@ -63,9 +63,11 @@ pipeline {
           env.IS_RELEASE  = (env.BRANCH in ['develop', 'master']).toString()
           env.TARGET_REPO = (env.IS_RELEASE == 'true') ? env.RELEASE_REPO : env.SANDBOX_REPO
           // Separate build names so each route gets its own Xray watch —
-          // a single "shipit" build name can't carry two different
-          // severity thresholds (Critical/High on sandbox vs also-Medium
-          // on release).
+          // sandbox and release are gated separately even though both
+          // currently block at the same Critical/High threshold (a
+          // stricter Medium threshold on release was tried and dropped:
+          // most real-world Medium findings on a Debian base image are
+          // OS packages with no fix version available at all).
           env.BUILD_NAME  = (env.IS_RELEASE == 'true') ? "${env.APP_NAME}-release" : "${env.APP_NAME}-sandbox"
           // jf build-scan evaluates Xray's "build" resource type, which
           // — on this account — never actually computes violations
