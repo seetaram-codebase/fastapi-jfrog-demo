@@ -29,6 +29,7 @@ pipeline {
     SANDBOX_REPO    = 'artifact-sandbox'
     RELEASE_REPO    = 'artifact-release'
     ECS_CLUSTER     = 'jfrog-demo-app'
+    AWS_DEFAULT_REGION = 'us-east-1'
 
     GIT_SHA   = "${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'local'}"
     IMAGE_TAG = "${GIT_SHA}-${env.BUILD_NUMBER}"
