@@ -1,2 +1,6 @@
-fastapi==0.115.0
-uvicorn[standard]==0.32.0
+# fastapi is a minimum, not exact pin: fastapi==0.115.0's starlette
+# constraint (<0.39.0) keeps several known-CVE starlette versions in
+# range. Letting pip resolve the current fastapi picks up its current
+# (patched) starlette range too.
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0

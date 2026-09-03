@@ -21,6 +21,12 @@ WORKDIR /app
 COPY --from=builder /install /usr/local
 COPY app/ .
 
+# The base image ships its own pip/setuptools, often outdated enough to
+# be flagged directly by Xray (separate from anything in
+# requirements.txt) — upgrade them in the shipped image, not just the
+# discarded builder stage.
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
 ARG GIT_COMMIT=unknown
 ARG BUILD_NUMBER=local
 ARG IMAGE_TAG=dev
