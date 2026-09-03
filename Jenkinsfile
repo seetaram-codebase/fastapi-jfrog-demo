@@ -121,7 +121,18 @@ pipeline {
     stage('Deploy to ECS production') {
       when { environment name: 'IS_RELEASE', value: 'true' }
       steps {
-        sh "aws ecs update-service --cluster ${ECS_CLUSTER} --service shipit-production --force-new-deployment"
+        // --force-new-deployment alone restarts tasks on whatever task
+        // definition revision the service is already running — it never
+        // changes which image gets deployed. Register a new revision
+        // pointing at the image just built, then point the service at it.
+        sh """
+          aws ecs describe-task-definition --task-definition shipit --query taskDefinition > task-def.json
+          jq --arg IMG "${DOCKER_REGISTRY}/${TARGET_REPO}/${APP_NAME}:${IMAGE_TAG}" \
+            '.containerDefinitions[0].image = \$IMG | del(.taskDefinitionArn,.revision,.status,.requiresAttributes,.compatibilities,.registeredAt,.registeredBy)' \
+            task-def.json > new-task-def.json
+          NEW_ARN=\$(aws ecs register-task-definition --cli-input-json file://new-task-def.json --query 'taskDefinition.taskDefinitionArn' --output text)
+          aws ecs update-service --cluster ${ECS_CLUSTER} --service shipit-production --task-definition "\$NEW_ARN" --force-new-deployment
+        """
       }
     }
   }
